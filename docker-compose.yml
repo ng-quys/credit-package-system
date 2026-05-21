@@ -25,7 +25,7 @@ services:
       JWT_SECRET: secret_key
     ports:
       - "3000:3000"
-    command: sh -c "npx prisma generate && npx prisma db push && npm run start"
+    command: sh -c "npx prisma db push && npx prisma db seed && npm run start"
 
   frontend:
     build: ./frontend
