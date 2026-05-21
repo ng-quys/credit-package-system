@@ -38,7 +38,9 @@ async function bootstrap() {
     jsonDocumentUrl: 'api/docs-json',
     swaggerOptions: {
       persistAuthorization: true,
-      urls: [{ url: '/api/docs-json', name: 'Subscription Credit System API v1.0' }],
+      urls: [
+        { url: '/api/docs-json', name: 'Subscription Credit System API v1.0' },
+      ],
       urlsPrimaryName: 'Subscription Credit System API v1.0',
     },
   });

@@ -1,5 +1,10 @@
 import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PurchasesService } from './purchases.service';
@@ -22,10 +27,15 @@ export class PurchasesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('bearer')
   @Post('packages/:packageId')
-  @ApiOperation({ summary: 'Purchase an active package using fake payment flow' })
+  @ApiOperation({
+    summary: 'Purchase an active package using fake payment flow',
+  })
   @ApiResponse({ status: 201, description: 'Package purchased successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  purchasePackage(@Param('packageId') packageId: string, @CurrentUser() user: { id: string }) {
+  purchasePackage(
+    @Param('packageId') packageId: string,
+    @CurrentUser() user: { id: string },
+  ) {
     return this.purchasesService.purchasePackage(packageId, user.id);
   }
 }

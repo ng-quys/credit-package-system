@@ -1,5 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
@@ -23,7 +38,9 @@ export class PackagesController {
   @Roles('ADMIN')
   @ApiBearerAuth('bearer')
   @Get('admin')
-  @ApiOperation({ summary: 'Get all packages for admin, including inactive ones' })
+  @ApiOperation({
+    summary: 'Get all packages for admin, including inactive ones',
+  })
   @ApiResponse({ status: 200, description: 'All packages returned' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   findAllPackagesForAdmin() {
@@ -58,7 +75,10 @@ export class PackagesController {
   @ApiBearerAuth('bearer')
   @Delete('admin/:id')
   @ApiOperation({ summary: 'Soft delete a package as admin' })
-  @ApiResponse({ status: 200, description: 'Package soft deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Package soft deleted successfully',
+  })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   deletePackage(@Param('id') id: string) {
     return this.packagesService.softDeletePackageForAdmin(id);

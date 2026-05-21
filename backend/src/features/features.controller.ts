@@ -1,5 +1,10 @@
 import { Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FEATURE_CODE } from './constants/feature.constants';
@@ -17,7 +22,10 @@ export class FeaturesController {
   @ApiBearerAuth('bearer')
   @Post('use/ai-chat')
   @ApiOperation({ summary: 'Use AI_CHAT feature and deduct credits' })
-  @ApiResponse({ status: 201, description: 'AI_CHAT feature used successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'AI_CHAT feature used successfully',
+  })
   @ApiResponse({ status: 400, description: 'Insufficient credits' })
   @ApiResponse({ status: 403, description: 'Feature not unlocked' })
   useAiChatFeature(@CurrentUser() user: { id: string }) {
@@ -29,7 +37,10 @@ export class FeaturesController {
   @ApiBearerAuth('bearer')
   @Post('use/auto-post')
   @ApiOperation({ summary: 'Use AUTO_POST feature and deduct credits' })
-  @ApiResponse({ status: 201, description: 'AUTO_POST feature used successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'AUTO_POST feature used successfully',
+  })
   @ApiResponse({ status: 400, description: 'Insufficient credits' })
   @ApiResponse({ status: 403, description: 'Feature not unlocked' })
   useAutoPostFeature(@CurrentUser() user: { id: string }) {

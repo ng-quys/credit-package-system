@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePackageDto } from './dto/create-package.dto';
@@ -68,7 +72,9 @@ export class PackagesService {
   }
 
   // Admin create/update keep package rows and package-feature links consistent inside one transaction.
-  async createPackageForAdmin(dto: CreatePackageDto): Promise<PackageResponseDto> {
+  async createPackageForAdmin(
+    dto: CreatePackageDto,
+  ): Promise<PackageResponseDto> {
     const featureIds = dto.featureIds ?? [];
     await this.ensureFeaturesExist(featureIds);
 
@@ -101,7 +107,10 @@ export class PackagesService {
     return this.toResponse(created);
   }
 
-  async updatePackageForAdmin(id: string, dto: UpdatePackageDto): Promise<PackageResponseDto> {
+  async updatePackageForAdmin(
+    id: string,
+    dto: UpdatePackageDto,
+  ): Promise<PackageResponseDto> {
     const packageId = this.parseId(id);
     await this.ensurePackageExists(packageId);
 
@@ -115,8 +124,12 @@ export class PackagesService {
         where: { id: packageId },
         data: {
           ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
-          ...(dto.description !== undefined ? { description: dto.description?.trim() || null } : {}),
-          ...(dto.price !== undefined ? { price: new Prisma.Decimal(dto.price) } : {}),
+          ...(dto.description !== undefined
+            ? { description: dto.description?.trim() || null }
+            : {}),
+          ...(dto.price !== undefined
+            ? { price: new Prisma.Decimal(dto.price) }
+            : {}),
           ...(dto.credits !== undefined ? { credits: dto.credits } : {}),
           ...(dto.isActive !== undefined ? { is_active: dto.isActive } : {}),
           updated_at: new Date(),
@@ -147,6 +160,7 @@ export class PackagesService {
     return this.toResponse(updated);
   }
 
+  // Soft delete keeps package history intact while hiding the package from the public catalog.
   async softDeletePackageForAdmin(id: string): Promise<PackageResponseDto> {
     const packageId = this.parseId(id);
     await this.ensurePackageExists(packageId);

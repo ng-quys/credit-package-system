@@ -1,6 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PAYMENT_METHOD, TRANSACTION_STATUS } from '../common/constants/payment.constants';
+import {
+  PAYMENT_METHOD,
+  TRANSACTION_STATUS,
+} from '../common/constants/payment.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { PurchaseHistoryResponseDto } from './dto/purchase-history-response.dto';
 import { PurchasePackageResponseDto } from './dto/purchase-package-response.dto';
@@ -9,7 +16,9 @@ import { PurchasePackageResponseDto } from './dto/purchase-package-response.dto'
 export class PurchasesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getPurchaseHistoryForCurrentUser(userId: string): Promise<PurchaseHistoryResponseDto[]> {
+  async getPurchaseHistoryForCurrentUser(
+    userId: string,
+  ): Promise<PurchaseHistoryResponseDto[]> {
     const parsedUserId = this.parseId(userId, 'user id');
     const transactions = await this.prisma.transactions.findMany({
       where: { user_id: parsedUserId },
@@ -19,17 +28,24 @@ export class PurchasesService {
     return transactions.map((transaction) => ({
       id: transaction.id.toString(),
       transactionCode: transaction.transaction_code,
-      packageId: transaction.package_id ? transaction.package_id.toString() : null,
+      packageId: transaction.package_id
+        ? transaction.package_id.toString()
+        : null,
       amount: Number(transaction.amount),
       credits: transaction.credits,
       status: transaction.status,
       paymentMethod: transaction.payment_method ?? null,
-      createdAt: transaction.created_at ? transaction.created_at.toISOString() : null,
+      createdAt: transaction.created_at
+        ? transaction.created_at.toISOString()
+        : null,
     }));
   }
 
   // Purchase flow is transactional so transaction record, credits, and unlocked features stay in sync.
-  async purchasePackage(packageId: string, userId: string): Promise<PurchasePackageResponseDto> {
+  async purchasePackage(
+    packageId: string,
+    userId: string,
+  ): Promise<PurchasePackageResponseDto> {
     const parsedPackageId = this.parseId(packageId, 'package id');
     const parsedUserId = this.parseId(userId, 'user id');
 
@@ -63,6 +79,7 @@ export class PurchasesService {
 
       const transactionCode = `TXN_${parsedUserId.toString()}_${parsedPackageId.toString()}_${Date.now()}`;
 
+      // This demo flow records a successful fake payment immediately before applying entitlements.
       const createdTransaction = await tx.transactions.create({
         data: {
           transaction_code: transactionCode,
@@ -75,6 +92,7 @@ export class PurchasesService {
         },
       });
 
+      // Credits are upserted so first-time buyers and returning buyers share the same flow.
       const creditRecord = await tx.user_credits.upsert({
         where: { user_id: parsedUserId },
         update: {
@@ -89,7 +107,9 @@ export class PurchasesService {
         },
       });
 
-      const packageFeatures = foundPackage.package_features.map((relation) => relation.features);
+      const packageFeatures = foundPackage.package_features.map(
+        (relation) => relation.features,
+      );
       const packageFeatureIds = packageFeatures.map((feature) => feature.id);
 
       if (packageFeatureIds.length > 0) {
@@ -106,7 +126,9 @@ export class PurchasesService {
         });
 
         // Only insert missing feature unlocks so repeat purchases can safely add credits without duplicate rows.
-        const existingFeatureIdSet = new Set(existingUserFeatures.map((item) => item.feature_id.toString()));
+        const existingFeatureIdSet = new Set(
+          existingUserFeatures.map((item) => item.feature_id.toString()),
+        );
         const missingFeatureIds = packageFeatureIds.filter(
           (featureId) => !existingFeatureIdSet.has(featureId.toString()),
         );
@@ -130,7 +152,9 @@ export class PurchasesService {
           credits: createdTransaction.credits,
           status: createdTransaction.status,
           paymentMethod: createdTransaction.payment_method ?? null,
-          createdAt: createdTransaction.created_at ? createdTransaction.created_at.toISOString() : null,
+          createdAt: createdTransaction.created_at
+            ? createdTransaction.created_at.toISOString()
+            : null,
         },
         creditBalance: creditRecord.balance,
         unlockedFeatures: packageFeatures.map((feature) => ({

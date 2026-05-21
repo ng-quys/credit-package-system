@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FEATURE_CREDIT_COST } from './constants/feature.constants';
 
@@ -7,7 +11,10 @@ export class FeaturesService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Deduct credits and write usage history in the same transaction to keep balance/history consistent.
-  async useFeature(userId: string, featureCode: keyof typeof FEATURE_CREDIT_COST) {
+  async useFeature(
+    userId: string,
+    featureCode: keyof typeof FEATURE_CREDIT_COST,
+  ) {
     const parsedUserId = this.parseUserId(userId);
     const creditsRequired = FEATURE_CREDIT_COST[featureCode];
 
@@ -28,6 +35,7 @@ export class FeaturesService {
         throw new NotFoundException('Feature not found');
       }
 
+      // Read the latest balance inside the transaction before deciding whether usage is allowed.
       const currentCredits = await tx.user_credits.findUnique({
         where: { user_id: parsedUserId },
         select: {
@@ -42,6 +50,7 @@ export class FeaturesService {
         throw new BadRequestException('Insufficient credits');
       }
 
+      // Update the balance first, then persist an audit row for the feature usage.
       const updatedCredits = await tx.user_credits.update({
         where: { user_id: parsedUserId },
         data: {

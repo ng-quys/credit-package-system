@@ -16,7 +16,10 @@ export class UsersService {
     return this.prisma.users.findUnique({ where: { id } });
   }
 
-  async getCreditsForCurrentUser(userId: string): Promise<UserCreditsResponseDto> {
+  // Dashboard reads are scoped to the authenticated JWT subject, not a caller-supplied user id.
+  async getCreditsForCurrentUser(
+    userId: string,
+  ): Promise<UserCreditsResponseDto> {
     const parsedUserId = this.parseUserId(userId);
     const userCredits = await this.prisma.user_credits.findUnique({
       where: { user_id: parsedUserId },
@@ -28,7 +31,9 @@ export class UsersService {
     };
   }
 
-  async getUnlockedFeaturesForCurrentUser(userId: string): Promise<UserFeatureResponseDto[]> {
+  async getUnlockedFeaturesForCurrentUser(
+    userId: string,
+  ): Promise<UserFeatureResponseDto[]> {
     const parsedUserId = this.parseUserId(userId);
     const unlockedFeatures = await this.prisma.user_features.findMany({
       where: { user_id: parsedUserId },
@@ -55,7 +60,9 @@ export class UsersService {
     }));
   }
 
-  async getCreditUsageHistoryForCurrentUser(userId: string): Promise<CreditUsageResponseDto[]> {
+  async getCreditUsageHistoryForCurrentUser(
+    userId: string,
+  ): Promise<CreditUsageResponseDto[]> {
     const parsedUserId = this.parseUserId(userId);
     const creditUsages = await this.prisma.credit_usages.findMany({
       where: { user_id: parsedUserId },
