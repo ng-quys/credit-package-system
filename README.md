@@ -48,7 +48,13 @@ credit-package-system/
 ├── docker-compose.yml
 └── README.md
 ```
-
+## Run With Docker
+```bash
+cd D:\Downloads
+git clone https://github.com/ng-quys/credit-package-system.git test-credit-package-system
+cd test-credit-package-system
+docker compose up --build
+```
 # How to Run Locally
 ## 1. Create Database
 
@@ -95,37 +101,50 @@ npm install
 npm run dev
 ```
 
-## Run With Docker
-```bash
-docker compose up --build
-```
+
 
 # Main API Endpoints
+
 ## Auth
-POST /auth/register
-POST /auth/login
-GET  /auth/me
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/auth/register` | Register new account |
+| POST | `/auth/login` | Login and receive JWT |
+| GET | `/auth/me` | Get current user profile |
 
 ## Packages
-GET    /packages
-GET    /packages/:id
-GET    /packages/admin
-POST   /packages/admin
-PUT    /packages/admin/:id
-DELETE /packages/admin/:id
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/packages` | Get active packages |
+| GET | `/packages/:id` | Get package details |
+| GET | `/packages/admin` | Admin get all packages |
+| POST | `/packages/admin` | Create package |
+| PUT | `/packages/admin/:id` | Update package |
+| DELETE | `/packages/admin/:id` | Soft delete package |
 
 ## Purchases
-POST /purchases/packages/:packageId
-GET  /purchases/history
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/purchases/packages/:packageId` | Purchase package |
+| GET | `/purchases/history` | Get purchase history |
 
 ## User Dashboard
-GET /users/me/credits
-GET /users/me/features
-GET /users/me/credit-usages
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/users/me/credits` | Get current credits |
+| GET | `/users/me/features` | Get unlocked features |
+| GET | `/users/me/credit-usages` | Get credit usage history |
 
 ## Feature Usage
-POST /features/use/ai-chat
-POST /features/use/auto-post
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/features/use/ai-chat` | Use AI Chat feature |
+| POST | `/features/use/auto-post` | Use Auto Post feature |
 
 ## Screenshots
 
